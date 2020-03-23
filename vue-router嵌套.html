@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <script src="./lib/vue_2.5.22.js"></script>
+    <script src="./lib/vue-router_3.0.2.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <h1>使用 children 属性设置子路由,进行组件嵌套,同时子路由的path前面不要带斜线,否则永远以根路径开始请求,这样不方便我们用户理解URL地址</h1>
+        <router-link to="/account">account</router-link>
+        <router-view></router-view>
+    </div>
+    <template id="temp1">
+        <div>
+            <h1>Account 组件</h1>
+            <router-link to="/account/login">登录</router-link>
+            <router-link to='/account/register'>注册</router-link>
+            <router-view></router-view>
+        </div>
+    </template>
+    <script>
+        var account = {
+            template: '#temp1'
+        }
+        var login = {
+            template: `<h2>登录组件</h2>`
+        }
+        var register = {
+            template: `<h2>注册组件</h2>`
+        }
+
+        const router = new VueRouter({
+            routes: [{
+                path: '/account',
+                component: account,
+                children: [{
+                    path: 'login',
+                    component: login
+                }, {
+                    path: 'register',
+                    component: register
+
+                }]
+            }]
+        });
+        var vm = new Vue({
+            el: '#app',
+            data: {},
+            methods: {},
+            router
+        });
+    </script>
+</body>
+
+</html>

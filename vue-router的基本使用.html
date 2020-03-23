@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vue-router的基本使用</title>
+    <script src="./lib/vue_2.5.22.js"></script>
+    <!--1.引入依赖包-->
+    <script src="./lib/vue-router_3.0.2.js"></script>
+    <style>
+        .router-link-active {
+            color: chocolate;
+            background-color: cornsilk;
+        }
+        
+        .myroute {
+            color: darkgoldenrod;
+            background-color: darkgrey;
+        }
+        
+        .v-enter,
+        .v-leave-to {
+            opacity: 0;
+            transform: rotateX(90deg);
+        }
+        
+        .v-enter-active,
+        .v-leave-active {
+            transition: all 0.7s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h3>使用 a 标签</h3>
+        <a href="#/login">登录</a>
+        <a href="#/register">注册</a>
+        <hr>
+        <h3>使用 router-link(推荐)</h3>
+        <h4>默认渲染为 a 标签 ,使用 tag可以修改为其他标签</h4>
+
+        <!--默认渲染为 a 标签 ,使用 tag可以修改为其他标签-->
+        <router-link to="/login" tag='span'>登录</router-link>
+        <router-link to="/register">注册</router-link>
+        <h4>选中高亮 </h4>
+        <h5>1.使用默认类</h5>
+        <h5>2自定义高亮,在vue-router对象使用linkActiveClass</h5>
+        <h4>使用过度动画 使用 transition 标签将 router-view 标签包裹</h4>
+        <!--使用占位符-->
+        <transition mode='out-in'>
+            <router-view></router-view>
+        </transition>
+
+    </div>
+    <script>
+        /*2.创建组件模板对象*/
+        var login = {
+            template: `<h1>这是登录组件</h1>`
+        };
+        var register = {
+            template: `<h1>这是注册组件</h1>`
+        };
+        /*3.创建vue-router对象*/
+        /**
+         * route    路由匹配规则
+         * routes[] 路由匹配规则
+         * 每个路由规则: 都是一个对象,这个规则对象身上有两个必须的属性
+         * 属性1. path 表示监听 哪个路由连接地址
+         * 属性2. component 表示如果路由前面匹配到的 path,则展示 component 属性对应的那个组件
+         * 注意: component 的属性值,必须是一个 组件的模板对象
+         *       redirect 重定向
+         */
+        var routerObj = new VueRouter({
+            routes: [{
+                path: '/',
+                redirect: '/login' //可以强制显示某个组件,
+            }, {
+                path: '/login',
+                component: login
+            }, {
+                path: '/register',
+                component: register
+            }],
+            linkActiveClass: 'myroute' //修改默认类
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {},
+            methods: {},
+            /*4.与vue-router相关联*/
+            router: routerObj
+        });
+    </script>
+</body>
+
+</html>

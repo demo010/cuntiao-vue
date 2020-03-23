@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vue-router 传参</title>
+    <script src="./lib/vue_2.5.22.js"></script>
+    <script src="./lib/vue-router_3.0.2.js"></script>
+    <style>
+        span {
+            cursor: pointer;
+        }
+        
+        .mycom {
+            color: darkslategrey;
+            background-color: dimgray;
+        }
+        
+        .v-enter,
+        .v-leave-to {
+            opacity: 0;
+            transform: rotateY(90deg);
+        }
+        
+        .v-enter-active,
+        .v-leave-active {
+            transition: all 0.7s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>vue-router传参</h1>
+        <hr>
+        <h2>使用 query 传参</h2>
+        <h3>通过 $route.query.xxx</h3>
+        <router-link to="/login?id=10&name=hello" tag="span">登录</router-link>
+        <router-link to="/register/12/hello2" tag="span">注册</router-link>
+        <router-link to="/loginout" tag="span">登出 </router-link>
+        <transition mode='out-in'>
+            <router-view></router-view>
+        </transition>
+
+    </div>
+    <script>
+        var login = {
+            template: `<h1>login组件--{{$route.query.id + '--' + $route.query.name}}</h1>`
+        };
+        var register = {
+            template: `<h1>register组件--{{$route.params.id + '--' + $route.params.name}}</h1>`,
+            created() {
+                console.log(this.$route.params.id)
+            },
+        };
+        var loginout = {
+            template: `<h1>loginout组件</h1>`
+        }
+        var routerObj = new VueRouter({
+            routes: [{
+                path: '/',
+                redirect: '/login'
+            }, {
+                path: '/login',
+                component: login
+            }, {
+                path: '/register/:id/:name',
+                component: register
+            }, {
+                path: '/loginout',
+                component: loginout
+            }],
+            linkActiveClass: 'mycom'
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {},
+            methods: {},
+            router: routerObj
+        });
+    </script>
+</body>
+
+</html>
