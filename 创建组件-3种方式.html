@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>创建组件的3种方式</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <h1>所有模板的html代码只能由一个根标签包裹</h1>
+        <mycom0></mycom0>
+        <mycom1></mycom1>
+        <mycom2></mycom2>
+        <mycom3></mycom3>
+        <mycom4></mycom4>
+    </div>
+    <template id="com2">
+        <div>
+            <h2>这是创建 VUE 组件的第三种方式</h2>
+            <h4>使用了 template 标签包裹组件内容</h4>
+            <hr>
+        </div>
+    </template>
+    <script>
+        /**方式一*/
+        var com0 = {
+            template: `<div>
+                    <h2>这是创建 VUE 组件的第一种方式</h2>
+                    <h4>对象字面量 var com = {}</h4>
+                    <hr>
+                </div>`
+        }
+        Vue.component('mycom0', com0);
+        var com1 = Vue.extend({
+            template: `<div>
+                    <h2>这是创建 VUE 组件的第一种方式</h2>
+                    <h4>使用了 Vue.extend()</h4>
+                    <hr>
+                </div>`
+        });
+
+        Vue.component('mycom1', com1);
+        /**可简写为一下方式*/
+        Vue.component('mycom2', Vue.extend({
+            template: `<div>
+                    <h2>这是创建 VUE 组件的第一种方式 -- 简写</h2>
+                    <h4>使用了Vue.component('name',Vue.component({}))</h4>
+                    <hr>
+                </div>`
+        }));
+
+        /**方式二*/
+        Vue.component('mycom3', {
+            template: `<div>
+                    <h2>这是创建 VUE 组件的第二种方式</h2>
+                    <h4>使用了 Vue.component()</h4>
+                    <hr>
+                </div>`
+        })
+
+        /**方式三*/
+        Vue.component('mycom4', {
+            template: '#com2'
+        })
+
+
+        var vm = new Vue({
+            el: '#app',
+            data: {},
+            methods: {}
+        });
+    </script>
+</body>
+
+</html>

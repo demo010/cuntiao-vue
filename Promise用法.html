@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    <title>Promise 用法</title>
+</head>
+
+<body>
+    <script>
+        var p1 = new Promise(function(resolve, reject) {
+            //使用定时操作模拟数据请求
+            setInterval(function() {
+                let flag = true;
+
+                if (flag) {
+                    //成功调用resolve()
+                    resolve('success')
+                } else {
+                    //失败调用reject()
+                    reject('error');
+                }
+            }, 1000)
+
+        });
+        var p2 = new Promise(function(resolve, reject) {
+            //使用定时操作模拟数据请求
+            setInterval(function() {
+                let flag = true;
+
+                if (flag) {
+                    //成功调用resolve()
+                    resolve('success2')
+                } else {
+                    //失败调用reject()
+                    reject('error');
+                }
+            }, 2000)
+
+        });
+        var p3 = new Promise(function(resolve, reject) {
+            //使用定时操作模拟数据请求
+            setInterval(function() {
+                let flag = true;
+
+                if (flag) {
+                    //成功调用resolve()
+                    resolve('success3')
+                } else {
+                    //失败调用reject()
+                    reject('error');
+                }
+            }, 3000)
+
+        });
+        /*  p.then(function(suc) {
+             //从resolve得到正常结果
+             console.log(suc);
+         }, function(err) {
+             //从reject得到错误信息
+             console.log(err);
+         }); */
+
+        function queryData(method, url) {
+            var p = new Promise(function(resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                /* xhr.setRequestHeader('client_type', 'DESKTOP_WEB') */
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState != 4) return;
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        resolve(xhr.responseText)
+                    } else {
+                        reject('出错了...')
+                    }
+                }
+                xhr.open(method, url);
+                xhr.send();
+            });
+            return p;
+        }
+        /*   queryData('get', 'http://zhouxunwang.cn/data/?id=64&key=B7zCrYUwSNv+jJqN+ok1RWvCPwTgsJeZ/px06Q&catalog_id=242&pn=10&rn=20')
+              .then(function(data) {
+                  console.log(data);
+              }, function(info) {
+                  console.log(info);
+              }); */
+        //----------------发送多个Ajax请求并且保证顺序------------
+        function queryData1() {
+            var p = new Promise(function(resolve, reject) {
+                setInterval(function() {
+                    let flag = true;
+                    flag ? resolve('queryData1') : reject('error1');
+                }, 1000)
+            });
+            return p;
+        }
+
+        function queryData2() {
+            var p = new Promise(function(resolve, reject) {
+                setInterval(function() {
+                    let flag = true;
+                    flag ? resolve('queryData2') : reject('error2');
+                }, 2000)
+            });
+            return p;
+        }
+
+        function queryData3() {
+            return new Promise(function(resolve, reject) {
+                setInterval(function() {
+                    let flag = true;
+                    flag ? resolve('queryData3') : reject('error3');
+                }, 3000)
+            });
+
+        }
+        /*       queryData1().then(function(data) {
+                      console.log(data);
+                      return queryData2(); //返回promise对象
+                  }).then(function(data) {
+                      console.log(data);
+                      return queryData3(); //返回promise对象
+                  }).then(function(data) {
+                      console.log(data);
+                      return 'end'; //返回普通值,会产生一个默认的promise对象
+                  })
+                  .then(function(data) {
+                      console.log(data);
+                  }); */
+        console.log('---------------------实例对象-------------------------');
+
+        /*        queryData3()
+                   .then(function(data) {
+                       console.log(data);
+                   })
+                   .catch(function(data) {
+                       console.log(data);
+                   })
+                   .finally(function() {
+                       console.log('finished3');
+
+                   });
+
+               queryData2()
+                   .then(function(data) {
+                       console.log(data);
+                   })
+                   .catch(function(data) {
+                       console.log(data);
+                   })
+                   .finally(function() {
+                       console.log('finished2');
+                   });
+               queryData1()
+                   .then(function(data) {
+                       console.log(data);
+
+                   }, function(info) {
+                       console.log(info);
+
+                   })
+                   .finally(function() {
+                       console.log('finished1');
+                   }); */
+
+        console.log('---------------------对象方法-------------------------');
+        /*    Promise.all([p1, p2, p3]).then(function(result) {
+               console.log(result);
+
+           });
+           Promise.all([queryData1(), queryData2(), queryData3()]).then((result) => {
+               console.log(result);
+
+           });
+           Promise.race([p1, p2, p3]).then((result) => {
+               console.log(result);
+
+           }); */
+        console.log('---------------------fetch()-------------------------');
+        const url = 'http://zhouxunwang.cn/data/';
+        fetch(url, {
+            method: 'post',
+            body: 'id=64&key=B7zCrYUwSNv+jJqN+ok1RWvCPwTgsJeZ/px06Q&catalog_id=242&pn=10&rn=20',
+            headers: {
+                'Content_Type': 'application/x-www-form-urlencoded',
+                'Access-Control-Allow-Origin': '*'
+            }
+        }).then((response) => {
+            return response.text(); //response.json();
+        }).then((result) => {
+            console.log(result)
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书管理</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+    <script src="./js/dateTool.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .grid {
+            margin: auto;
+            width: 500px;
+            text-align: center;
+        }
+        
+        .grid table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .grid th,
+        td {
+            padding: 10px;
+            border: 1px dashed orange;
+            height: 35px;
+            line-height: 35px;
+        }
+        
+        .grid th {
+            background-color: orange;
+        }
+        
+        .grid a {
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .book {
+            width: 100%;
+            box-sizing: border-box;
+            height: 50px;
+            line-height: 50px;
+            background-color: orange;
+            border: 2px dashed rgba(223, 159, 41, 0.8);
+        }
+        
+        .grid .total {
+            height: 30px;
+            line-height: 30px;
+            background-color: orange;
+            border-bottom: 2px solid rgba(223, 159, 41, 0.8);
+        }
+        
+        button {
+            border: none;
+            border-radius: 5px;
+            background-color: rgb(243, 146, 19);
+            padding: 5px 10px;
+        }
+        
+        .books {
+            width: 600px;
+            height: auto;
+            margin: 20px auto;
+        }
+        /*    .books>ul {
+            width: 100%;
+        }
+        
+        .books>ul>li {
+            width: 200px;
+            float: left;
+        } */
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="grid">
+            <div>
+                <h1>图书管理</h1>
+                <div class="book">
+                    <div>
+                        <label for="id">编号</label>
+                        <input type="text" name="" id="id" v-model='id' :disabled='true' v-foucs>
+                        <label for="name">名称</label>
+                        <input type="text" name="" id="name" v-model='name'>
+                        <button @click='addBook' :disabled='submitFlag'>提交</button>
+                    </div>
+                </div>
+            </div>
+            <div class="total">
+                <span>图书数量</span>
+                <span>{{total}}</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>编号</th>
+                        <th>名称</th>
+                        <th>时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr :key='item.id' v-for='(item,index) in books'>
+                        <td>{{item.id}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.subdate | format('yyyy-MM-dd hh:mm:ss')}}</td>
+                        <td>
+                            <a href="" @click.prevent='updateBook(item.id)'>修改</a>
+                            <span>|</span>
+                            <a href="" @click.prevent='deleteBook(item.id)'>删除</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="books">
+            <ul>
+                <li :key='id' v-for='item in results'>
+                    <!--  {{item.id + '-' + item.date + '-' + item.url}} -->
+                    <img :src="item.url" alt="item.date" :title="item.url">
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            //axios 默认路径配置
+            axios.defaults.baseURL = 'http://localhost:8080/bookManager/';
+            //axios设置响应拦截器
+            axios.interceptors.response.use(response => {
+                return response.data //拦截处理响应结果，直接返回需要的数据
+            }, err => {
+                console.log(err)
+            })
+
+            Vue.directive('foucs', {
+                inserted: function(el) {
+                    el.focus();
+                }
+            });
+            Vue.filter('format1', function(value, arg) {
+
+                return dateFormat(value, arg);
+            });
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    id: '',
+                    name: '',
+                    stopInput: false, //输入框是否禁用
+                    submitFlag: false,
+                    books: [],
+                    results: []
+
+                },
+                methods: {
+                    //添加图书
+                    addBook: async function() {
+                        if (this.stopInput) { //修改
+                            //根据当前id更新数组中相对应的数据
+                            //箭头函数可以修改this指向
+                            /*  this.books.some(item => {
+                                 if (item.id == this.id) {
+                                     item.name = this.name;
+                                     //完成更新操作后,需要终止循环
+                                     return true
+                                 }
+                             }); */
+                            let ret = await axios.get(`BookServlet?action=updateBook&name=${this.name}&id=${this.id}`);
+
+                            if (ret.success == 0) { //修改成功,重新加载图书列表
+                                this.queryData();
+                            }
+                            this.stopInput = false;
+
+                        } else { //添加图书
+                            if (this.name) {
+                                let falg = '';
+                                const params = new URLSearchParams();
+                                params.append('action', 'addbook');
+                                params.append('name', this.name);
+                                params.append('subdate', new Date());
+                                let ret = await axios.post(`BookServlet`, params);
+                                // console.log(ret);
+                                if (ret.success == 0) {
+                                    //重新加载图书列表
+                                    this.queryData();
+                                }
+
+                            }
+                        }
+                        //清空表单
+                        this.id = '';
+                        this.name = '';
+                        /*  this.submitFlag = true; */
+
+                    },
+                    //修改图书
+                    updateBook: async function(id) {
+
+                        //根据id查询要修改的数据
+                        /* let book = this.books.filter(item => item.id == id); */
+
+                        //把获取到的信息填充到表单
+                        /* this.id = book[0].id;
+                        this.name = book[0].name;
+                        this.stopInput = true; */ //禁用输入框输入
+                        //区分编辑和添加操作
+                        this.stopInput = true;
+                        //根据id查询图书信息
+                        let ret = await axios.get(`BookServlet?action=selectBookByid&id=${id}`);
+                        console.log(ret.data);
+                        this.id = ret.data.id;
+                        this.name = ret.data.name;
+
+                    },
+                    //删除图书
+                    deleteBook: async function(id) {
+                        /*   //方法一
+                          //根据id从数组中查找元素的索引
+                          this.books.findIndex(item => item.id == id);
+                          //根据索引删除数组元素
+                          this.books.splice(index, 1); */
+                        //方法二
+                        /* this.books = this.books.filter(item => item.id != id); */
+                        let ret = await axios.get(`BookServlet?action=deleteBook&id=${id}`);
+                        if (ret.success == 0) { //删除成功,重新加载图书列表
+                            this.queryData();
+                        }
+                    },
+                    queryData: async function() {
+                        //调用接口获取图书列表数据
+                        var ret = await axios.get('BookServlet?action=selectAllBook');
+                        this.books = ret.data;
+                        /* this.books = await axios.get('BookServlet?action=selectAllBook'); */
+                        //console.log(this.books);
+
+                    }
+
+                },
+                filters: {
+                    format: (value, arg) => dateFormat(value, arg)
+
+                },
+                computed: {
+                    //计算图书的总数
+                    total: function() {
+                        return this.books.length;
+                    },
+
+                },
+                watch: {
+                    //侦听图书名称是否存在
+                    name: async function(val) {
+                        var ret = await axios.get(`BookServlet?action=selectBookName&name=${this.name}`);
+                        // console.log(ret.success);
+                        // console.log(ret.msg);
+                        /* alert(ret.msg);
+                        ret.success == 1 ? (this.submitFlag = true) : (this.submitFlag = false); */
+                        if (ret.success == 1) {
+                            // alert(ret.msg);
+                            this.submitFlag = true;
+                        } else {
+                            this.submitFlag = false;
+                        }
+                    }
+                },
+                mounted: function() {
+                    //该生命周期钩子函数触发的时候,模板已经可以使用
+                    //一般此时用于获取后台数据,然后把数据填充到模板
+
+                    this.queryData();
+                },
+            });
+        }
+    </script>
+</body>
+
+</html>

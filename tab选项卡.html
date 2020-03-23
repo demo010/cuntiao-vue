@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tab选项卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        
+        #app {
+            width: 600px;
+            margin: 20px auto;
+        }
+        
+        .tab {
+            width: 450px;
+            height: 50px;
+        }
+        
+        ul {
+            display: inline-block;
+        }
+        
+        ul>li {
+            float: left;
+            width: 150px;
+            height: 50px;
+            border: 1px #666 solid;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+        }
+        
+        .active {
+            background-color: lightskyblue;
+        }
+        
+        img {
+            width: 600px;
+            height: auto;
+        }
+        
+        .current>img {
+            display: block;
+        }
+        
+        div>img {
+            display: none;
+        }
+        /* .tab>ul>li:hover {
+            background-color: lightskyblue;
+            transition: 0.5s ease-in-out;
+        }*/
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="tab">
+            <ul>
+                <!--  <li class='active'>朋友请听好</li>
+                <li>华晨宇公益新单</li>
+                <li>摩登兄弟-刘宇宁</li> -->
+                <li @click='change(index)' :class='currentIndex==index?"active":""' :key='item.id' v-for='(item,index) in list'>{{item.title}}</li>
+            </ul>
+        </div>
+        <div :class='currentIndex==index?"current":""' :key='item.id' v-for='(item,index) in list'>
+            <img :src="item.imgpath" alt="">
+        </div>
+        <!--  <div class="current">
+            <img src="./img/1.jpg" alt="朋友请听好">
+        </div>
+        <div>
+            <img src="./img/2.jpg" alt="华晨宇公益新单">
+        </div>
+        <div>
+            <img src="./img/3.jpg" alt="摩登兄弟-刘宇宁">
+        </div> -->
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                tabTitle: ['朋友请听好', '华晨宇公益新单', '摩登兄弟-刘宇宁'],
+                tabImg: ['./img/1.jpg', './img/2.jpg', './img/3.jpg'],
+                currentIndex: 0, //注意:选项卡当前索引==控制类名变换
+                list: [{
+                    id: 1,
+                    title: '朋友请听好',
+                    imgpath: './img/1.jpg'
+                }, {
+                    id: 2,
+                    title: '华晨宇公益新单',
+                    imgpath: './img/2.jpg'
+                }, {
+                    id: 3,
+                    title: '摩登兄弟-刘宇宁',
+                    imgpath: './img/3.jpg'
+                }]
+
+            },
+            methods: {
+                change: function(index) {
+                    //实现选项卡切换操作
+                    //本质就是操作类名
+                    //如何操作类名==通过currentIndex
+                    this.currentIndex = index;
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>

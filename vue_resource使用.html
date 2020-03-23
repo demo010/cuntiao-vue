@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue-resource使用</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <button type="submit" @click='getInfo'>get请求</button>
+        <button type="submit" @click='postInfo'>post请求</button>
+        <button type="submit" @click='jsonpInfo'>jsonp请求</button>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+                getInfo: function() {
+                    this.$http.get(`http://vue.studyit.io/api/getlunbo`).then(function(res) {
+                        console.log('res', res)
+                    }, function(err) {
+                        console.log(err);
+                    })
+                },
+                postInfo: function() {
+                    this.$http.post(`http://vue.studyit.io/api/post`, {}, {
+                        emulateJSON: true
+                    }).then(res => console.log(res));
+                },
+                jsonpInfo: function() {
+                    this.$http.jsonp(`http://vue.studyit.io/api/jsonp`).then(res => console.log(res));
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

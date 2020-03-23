@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>组件切换</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            text-decoration: none;
+        }
+        
+        .comone {
+            width: 200px;
+            height: 100px;
+            border: 1px solid #987654;
+            border-radius: 5px;
+            background-color: cadetblue;
+        }
+        
+        .comtwo {
+            width: 200px;
+            height: 100px;
+            border: 1px solid #987654;
+            border-radius: 5px;
+            background-color: coral;
+        }
+        /**动画过渡*/
+        
+        .v-enter,
+        .v-leave-to {
+            opacity: 0;
+            margin-left: 200px
+        }
+        
+        .v-enter-active,
+        .v-leave-active {
+            transition: all 0.6s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h2>组件切换-方式一</h2>
+        <h3>使用 v-if, v-else 结合 flag 进行判断</h3>
+        <a href="" @click.prevent='flag = true'>com1</a>
+        <a href="" @click.prevent='flag = false'>com2</a>
+        <login v-if='flag'></login>
+        <register v-else='flag'></register>
+        <br>
+        <hr>
+        <h2>组件切换-方式二</h2>
+        <h3>使用 vue 提供的 component 标签进行组件的切换 :is='组件名称'</h3>
+        <a href="" @click.prevent='comName="login"'>com1</a>
+        <a href="" @click.prevent='comName="register"'>com2</a>
+        <a href="" @click.prevent='comName="loginout"'>com1</a>
+        <component :is='comName'></component>
+        <br>
+        <hr>
+        <h2>组件切换-动画</h2>
+        <h3>使用 vue 提供的 transition 标签将 component 包裹起来,mode='' 可以设置组件的进出顺序</h3>
+        <a href="" @click.prevent='comNames="login"'>com1</a>
+        <a href="" @click.prevent='comNames="register"'>com2</a>
+        <a href="" @click.prevent='comNames="loginout"'>com1</a>
+        <transition mode='out-in'>
+            <component :is='comNames'></component>
+        </transition>
+
+    </div>
+    <script>
+        /*组件切换方式一的组件定义*/
+        Vue.component('login', {
+            template: `<div class='comone'>
+                <h3>这是组件-com1</h3>
+            </div>`
+        });
+        Vue.component('register', {
+            template: `<div class='comtwo'>
+                <h3>这是组件-com2</h3>
+            </div>`
+        });
+        Vue.component('loginout', {
+            template: `<div class='comone'>
+                <h3>这是组件-com3</h3>
+            </div>`
+        });
+
+        var vm = new Vue({
+            el: '#app ',
+            data: {
+                flag: true, //用于标识组件的显示与否
+                comName: 'login', //:is='' 所要绑定的组件名称
+                comNames: 'loginout'
+            },
+            methods: {}
+        });
+    </script>
+</body>
+
+</html>

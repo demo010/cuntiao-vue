@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Vue</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        
+        .active {
+            border: 1px #555 solid;
+            width: 100px;
+            height: 100px;
+        }
+        
+        .error {
+            background-color: lightcoral;
+            transition: 0.7s ease-in-out;
+        }
+        
+        .base {
+            margin: 10px;
+        }
+        
+        .basefloat {
+            float: left;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app" v-cloak>
+        {{mag}}
+        <div>
+            {{1+2}}
+        </div>
+        <div v-text='mag'></div>
+        <div v-html='mag1'></div>
+        <div v-pre>{{mag}}</div>
+        <input type="text" v-model='mag'>
+        <div>{{num}}</div>
+        <button v-on:click='num++'>点击</button>
+        <button @click='num++'>点击0</button>
+        <button @click='handler1'>点击1</button>
+        <button @click='handler2(123,456,$event)'>点击2</button>
+        <button @click='handler3'>点击3</button> vue
+        <hr>
+        <h2>阻止事件冒泡与默认行为</h2>
+        <div>{{num}}</div>
+        <div @click="handler0">
+            <button @click="handler4">js</button>
+            <button @click.stop="handler3">vue</button>
+        </div>
+        <a href="https://www.baidu.com" @click="handler5">js</a>
+        <a href="https://www.baidu.com" @click.prevent="handler0">vue</a>
+        <hr>
+        <h2>按键修饰符</h2>
+        <div>
+            <input type="text" @keyup.delete='handlerClear' v-model='uname'>
+        </div>
+        <div>
+            <input type="text" @keyup.enter='handlerSubmit' v-model='pwd'>
+        </div>
+        <input type="button" value="提交" @click="handlerSubmit">
+        <h2>自定义按键修饰符</h2>
+        <input type="text" @keyup.65='handler0'>
+        <input type="text" @keyup.a='handler0'>
+        <hr>
+        <h2>属性绑定</h2>
+        <a v-bind:href="url">跳转</a>
+        <a :href="url">跳转-简写</a>
+        <button @click='changeUrl'>切换</button>
+        <h3>不使用v-model实现双向数据绑定</h3>
+        <div>{{mag}}</div>
+        <input type="text" :value='mag' @input='changeMag'>
+        <input type="text" :value='mag' @input='mag=$event.target.value'>
+        <input type="text" v-model='mag'>
+        <hr>
+        <h2>样式绑定</h2>
+        <h3>对象方式</h3>
+        <div :class="{active:isActive,error:isError}"></div>
+        <button @click='changeStyle'>切换样式</button>
+        <h3>数组方式</h3>
+        <div :class='[activeClass,errorClass]'></div>
+        <button @click='changeStyleByArr'>切换样式</button>
+        <h3>复合写法</h3>
+        <div :class='[activeClass,{error:isError}]'></div>
+        <button @click='changeStyleByArr_Obj'>切换样式</button>
+        <h3>简化写法</h3>
+        <div :class='arrClasses'></div>
+        <button @click='changeStyleByArrs'>切换样式</button>
+        <div :class='objClasses'></div>
+        <button @click='changeStyleByObjs'>切换样式</button>
+        <h3>存在默认的class</h3>
+        <div class="base" :class='objClasses'></div>
+        <hr>
+        <h2>style样式处理(内联样式处理)</h2>
+        <div :style='{width:widthStyle,height:heightStyle,border:borderStyle,margin:marginStyle}'></div>
+        <div :style='objStyle'></div>
+        <div :style='[objStyle,overridingStyles]'></div>
+        <button @click="changeLineStyle">修改</button>
+        <hr>
+        <h2>分支语句</h2>
+        <input type="text" v-model='score' :class='[floatClass]'>
+        <div v-if='score>=90'>优秀</div>
+        <div v-else-if='score<90&&score>=80'>良好</div>
+        <div v-else-if='score<80&&score>=60'>一般</div>
+        <div v-else>比较差</div>
+        <br>
+        <div v-show='flag' :class='[floatClass]'>v-show使用</div>
+        <button @click='v_show_useing'>点击</button>
+        <hr>
+        <h2>循环结构</h2>
+        <div>
+            <ul>
+                <li v-for='item in arrColor'>{{item}}</li>
+                <dl></dl>
+                <li v-for='(item,index) in objColor'>
+                    <span>{{item.cname}}</span>
+                    <span>---</span>
+                    <span>{{item.ename}}</span>
+                </li>
+                <dl></dl>
+                <li :key='index' v-for='(item,index) in arrColor'>{{item}}</li>
+                <dl></dl>
+                <li :key='item.id' v-for='item in objColor'>
+                    <span>{{item.id}}</span>
+                    <span>---</span>
+                    <span>{{item.cname}}</span>
+                    <span>---</span>
+                    <span>{{item.ename}}</span>
+                </li>
+                <dl>
+                    <li v-if='item.id!=1' v-for='item in objColor'>
+                        <span>{{item.id}}</span>
+                        <span>---</span>
+                        <span>{{item.cname}}</span>
+                        <span>---</span>
+                        <span>{{item.ename}}</span>
+                    </li>
+                </dl>
+                <dl>
+                    <h4>遍历对象</h4>
+                </dl>
+                <div v-for='(v,k,i) in objStyle'>
+                    {{v + '---' + k + '---' + i}}
+                </div>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        Vue.config.keyCodes.a = 65;
+        var vm = new Vue({
+            el: '.app',
+            data: {
+                mag: 'hello Vue',
+                mag1: '<h1>HELLO</h1>',
+                num: 0,
+                uname: '',
+                pwd: '',
+                url: 'https://www.baidu.com',
+                isActive: true,
+                isError: true,
+                activeClass: 'active',
+                errorClass: 'error',
+                arrClasses: ['active', 'error'],
+                floatClass: ['basefloat'],
+                objClasses: {
+                    active: true,
+                    error: true
+                },
+                widthStyle: '100px',
+                heightStyle: '200px',
+                borderStyle: '1px #555 solid',
+                marginStyle: '5px auto',
+                objStyle: {
+                    width: '100px',
+                    height: '200px',
+                    border: '1px #555 solid',
+                    margin: '5px auto'
+                },
+                overridingStyles: {
+                    border: '2px soild #999',
+                    background: '#ccc'
+                },
+                score: 100,
+                flag: false,
+                arrColor: ['黑色', '白色', '红色', '蓝色', '绿色'],
+                objColor: [{
+                    id: 1,
+                    cname: '黑色',
+                    ename: 'block'
+                }, {
+                    id: 2,
+                    cname: '白色',
+                    ename: 'white'
+                }, {
+                    id: 3,
+                    cname: '红色',
+                    ename: 'red'
+                }, {
+                    id: 4,
+                    cname: '蓝色',
+                    ename: 'blue'
+                }, {
+                    id: 5,
+                    cname: '绿色',
+                    ename: 'green'
+                }, ]
+
+            },
+            methods: {
+                /*  handler: () => this.num++ */
+                handler3: function(event) {
+                    console.log(event.target.innerHTML + '');
+                },
+                handler2: function(p1, p2, event) {
+                    console.log(p1, p2, event.target.innerHTML);
+
+                },
+                handler1: function(event) {
+                    console.log(event.target.innerHTML);
+                    //这里的this就是vue的实例对象vm
+                    this.num++;
+                },
+                handler0: function(event) {
+                    this.num++;
+                    console.log(event.keyCode);
+                },
+                handler4: function(event) {
+                    console.log(event.target.innerHTML);
+                    //阻止冒泡
+                    event.stopPropagation();
+                },
+                handler5: function(event) {
+                    this.num++;
+                    //阻止默认行为
+                    event.preventDefault()
+                },
+                handlerSubmit: function() {
+                    console.log(this.uname, this.pwd);
+                },
+                handlerClear: function() {
+                    this.uname = '';
+                },
+                changeUrl: function() {
+                    console.log(this.url);
+                    this.url = 'https://www.taobao.com/';
+                    console.log(this.url);
+                },
+                changeMag: function(event) {
+                    //使用输入域中的最新的数据覆盖原来的数据
+                    this.mag = event.target.value;
+                },
+                changeStyle: function() {
+                    //控制isActive的值再true和false之间进行切换
+                    this.isActive = !this.isActive;
+                    this.isError = !this.isError;
+                },
+                changeStyleByArr: function() {
+                    console.log(!this.activeClass);
+
+                    if (!this.activeClass) {
+                        this.activeClass = 'active';
+                        this.errorClass = 'error';
+                    } else {
+                        this.activeClass = '';
+                        this.errorClass = '';
+                    }
+
+                },
+                changeStyleByArrs: function() {
+                    this.arrClasses.splice(1, 1);
+                },
+                changeStyleByObjs: function() {
+                    this.objClasses.error = '';
+                },
+                changeStyleByArr_Obj: function() {
+                    this.isError = !this.isError;
+                },
+                changeLineStyle: function() {
+                    this.heightStyle = '100px'
+                    this.objStyle.height = '150px'
+                },
+                v_show_useing: function() {
+                    this.flag = !this.flag;
+                }
+
+            }
+        })
+    </script>
+</body>
+
+</html>

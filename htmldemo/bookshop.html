@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue-书城</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="../css/bookshop.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div></div>
+        <div>
+            <div id="app">
+                <div class="topnav">
+                    <ul>
+                        <li :key='index' v-for='(item,index) in bookCategory'>
+                            <a href="" @click.prevent>{{item.catalog_name}}</a>
+                        </li>
+                    </ul>
+                    <hr>
+                </div>
+
+                <div class="content">
+                    <ul>
+                        <li v-for='item in books'>
+                            <img :src="item.img" alt="">
+                            <p class="title">{{item.title}}</p>
+                            <p class="sub1">{{item.sub1}}</p>
+                            <p class="reading">{{item.reading}}</p>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="pagenav"></div>
+            </div>
+        </div>
+        <div></div>
+    </div>
+
+    </div>
+    <script>
+        window.onload = function() {
+            axios.get('http://localhost:8080/bookManager/BookServlet')
+                .then(res => console.log(res))
+                .catch(error => console.log(error))
+            var vm = new Vue({
+                el: '#app',
+                data: {
+                    bookCategory: [],
+                    books: []
+                },
+                methods: {
+                    getBookDate: function(catalog_id, pn, rn) {
+                        let id = parseInt(catalog_id);
+                        console.log(typeof(id));
+                        axios.get('http://zhouxunwang.cn/data/?id=64&key=B7zCrYUwSNv+jJqN+ok1RWvCPwTgsJeZ/px06Q&catalog_id=242&pn=10&rn=20')
+                            .then(this.bookData)
+                            .catch(error => console.log(error))
+                    },
+                    bookData(res) {
+                        const data = res.data.result;
+                        if (data) {
+                            this.books = data.data;
+                            console.log(this.books);
+                        }
+                    }
+                },
+                mounted: function() {
+                    this.bookCategory = [{
+                        catalog_id: 242,
+                        catalog_name: '中国文学'
+                    }, {
+                        catalog_id: 243,
+                        catalog_name: '外国文学'
+                    }, {
+                        catalog_id: 244,
+                        catalog_name: '儿童文学'
+                    }, {
+                        catalog_id: 245,
+                        catalog_name: '散文'
+                    }, {
+                        catalog_id: 246,
+                        catalog_name: '经典名著'
+                    }, {
+                        catalog_id: 247,
+                        catalog_name: '小说'
+                    }, {
+                        catalog_id: 248,
+                        catalog_name: '历史'
+                    }, {
+                        catalog_id: 249,
+                        catalog_name: '教育'
+                    }, {
+                        catalog_id: 250,
+                        catalog_name: '成功励志'
+                    }, {
+                        catalog_id: 251,
+                        catalog_name: '心灵鸡汤'
+                    }, {
+                        catalog_id: 252,
+                        catalog_name: '人物传记'
+                    }, {
+                        catalog_id: 253,
+                        catalog_name: '心理学'
+                    }, {
+                        catalog_id: 254,
+                        catalog_name: '管理'
+                    }, {
+                        catalog_id: 255,
+                        catalog_name: '经济'
+                    }, {
+                        catalog_id: 256,
+                        catalog_name: '理财'
+                    }, {
+                        catalog_id: 257,
+                        catalog_name: '哲学'
+                    }];
+                    /*  this.getBookDate(242, 10, 20); */
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

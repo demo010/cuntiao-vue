@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <h3 id="myh31">使用原生Js获取DOM元素的内容</h3>
+        <h3 ref='myh32'>使用vue的ref获取DOM元素的内容</h3>
+        <hr>
+        <br>
+        <button type="button" class="btn btn-primary" @click='handle'>点击</button>
+        <login ref='mylogin'></login>
+    </div>
+    <script>
+        var login = {
+            template: `<div><h3>login组件</h3></div>`,
+            data() {
+                return {
+                    msg: 'son msg'
+                }
+            },
+            methods: {
+                show() {
+                    console.log('这是login组件中的show方法');
+
+                }
+            }
+        }
+        var vm = new Vue({
+            el: '#app',
+            data: {},
+            methods: {
+                handle() {
+                    console.log('使用原生Js获取DOM', document.getElementById('myh31').innerText);
+                    console.log('使用vue的ref获取DOM元素的内容', this.$refs.myh32.innerText);
+                    console.log('获取子组件的data', this.$refs.mylogin.msg);
+                    console.log('获取子组件的methodsV');
+                    this.$refs.mylogin.show();
+
+                }
+            },
+            components: {
+                login,
+            }
+        });
+    </script>
+</body>
+
+</html>

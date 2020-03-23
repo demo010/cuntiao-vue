@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>动画-过度类名使用</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        /**
+        * v-enter [这是一个时间点] 是进入之前,元素的起始状态,此时还没有开始进入
+        * v-leave-to [这是一个时间点] 是动画离开之后,离开的终止状态,此时,动画已经结束
+        */
+        
+        .v-enter,
+        .v-leave-to {
+            opacity: 0;
+            transform: translateX(-100px);
+        }
+        /**
+        * v-enter-active 入场动画的时间段
+        * v-leave-active 离场动画的时间段
+        */
+        
+        .v-enter-active,
+        .v-leave-active {
+            transition: all 0.7s ease-in-out;
+        }
+        
+        .flag2-enter,
+        .flag2-leave-to {
+            opacity: 0;
+            transform: translateY(-100px);
+        }
+        
+        .flag2-enter-active,
+        .flag2-leave-active {
+            transition: all 0.7s ease-in-out;
+        }
+        
+        .div1 {
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-left: 10px solid #ed1250;
+        }
+        
+        .ball {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: red;
+        }
+        
+        .list {
+            width: 500px;
+            border: 1px dashed #123895;
+            padding: 10px 20px 10px 0px;
+            margin-left: 50px
+        }
+        
+        .list-enter,
+        .list-leave-to {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        .list-enter-active,
+        .list-leave-active {
+            transition: all 0.7s ease-in-out;
+        }
+        /**v-move 和 v-leave-active 结合使用，能够让列表的过渡更加平缓柔和：*/
+        
+        .list-move {
+            transition: all 0.7s ease-in-out;
+        }
+        
+        .list-leave-active {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="div1"></div>
+    <div id="app">
+        <h2>没有使用动画</h2>
+        <input type="button" value="toggle" @click="flag=!flag">
+        <h3 v-if="flag">动画-过度类名使用</h3>
+        <hr>
+        <h2>使用动画</h2>
+        <input type="button" value="toggle" @click="flag1=!flag1">
+        <!-- 1.使用 transition 元素,把需要被动画控制的元素包裹起来-->
+        <!-- transition 元素,是 VUE 官方提供的-->
+        <transition>
+            <h3 v-if="flag1">动画-过度类名使用</h3>
+        </transition>
+        <hr>
+        <h2>自定义v-前缀 -- 区分不同组的动画</h2>
+        <input type="button" value="toggle" @click="flag2=!flag2">
+        <transition name="flag2">
+            <h3 v-if="flag2">动画-过度类名使用 -- 自定义v-前缀</h3>
+        </transition>
+        <hr>
+        <h2>使用第三方类实现动画</h2>
+        <input type="button" value="toggle" @click="flag3=!flag3">
+        <!--enter-active-class="入场动画" leave-actice-class="离场动画" :duration="统一入场和离场时长"-->
+        <transition enter-active-class="animated rotateIn" leave-actice-class="animated lightSpeedOut" :duration="1200">
+            <h3 v-if="flag3">动画-过度类名使用 -- 使用第三方类实现动画 -- 统一入场和离场时长</h3>
+        </transition>
+        <transition enter-active-class="animated rotateIn" leave-actice-class="animated lightSpeedOut" :duration="{enter:400,leave:2000}">
+            <h3 v-if="flag3">动画-过度类名使用 -- 使用第三方类实现动画 -- 不统一入场和离场时长</h3>
+        </transition>
+        <hr>
+        <h2>钩子函数实现半场动画</h2>
+        <input type="button" value="小球半场动画-不会立即消失" @click='flag4 = !flag4'>
+        <transition @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
+            <div class="ball" v-if='flag4'></div>
+        </transition>
+        <br>
+        <input type="button" value="小球半场动画-会立即消失" @click='flag5 = !flag5'>
+        <transition @before-enter="beforeEnter2" @enter="enter2" @after-enter="afterEnter2">
+            <div class="ball" v-if='flag5'></div>
+        </transition>
+        <hr>
+        <h2>列表动画</h2>
+        <div style="margin-left: 50px;">
+
+            <label>id:
+                <input type="text" v-model='id'>
+            </label>
+            <label>name:
+                <input type="text" v-model='name'>
+            </label>
+            <input type="button" value="添加" @click='add'>
+
+        </div>
+        <br>
+        <!--  <ul> -->
+        <!--使用 transition-group 组件把v-for循环的列表包裹起来：-->
+        <!--如果要为 v-for 循环创建的元素设置动画,必须为每一个元素 设置 :key属性-->
+        <!--appear 入场效果-->
+        <!--tag 指定 transition-group 渲染为指定标签,如果不指定 tag 属性,默认渲染为 span标签-->
+        <transition-group name='list' appear tag="ul">
+            <li :key='item.id' v-for='(item,index) in list' class="list">
+                <span>{{item.id}} ------ {{item.name}}</span>
+                <span style="float: right;" @click='del(item.id)'>删除</span>
+
+            </li>
+        </transition-group>
+        <!-- </ul> -->
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                flag: false,
+                flag1: false,
+                flag2: false,
+                flag3: false,
+                flag4: false,
+                flag5: false,
+                id: '',
+                name: '',
+                list: [{
+                    id: 1,
+                    name: '苹果'
+                }, {
+                    id: 2,
+                    name: '梨子'
+                }, {
+                    id: 3,
+                    name: '黄桃'
+                }, {
+                    id: 4,
+                    name: '草莓'
+                }]
+            },
+            methods: {
+                beforeEnter(el) { // 动画进入之前的回调
+                    el.style.transform = 'translate(0,0)';
+                },
+                enter(el) { // 动画进入完成时候的回调
+                    el.offsetWidth;
+                    el.style.transform = 'translate(500px,50px)';
+                    el.style.transition = 'all 0.9s ease-in-out'
+
+                },
+
+                afterEnter(el) { // 动画进入完成之后的回调
+                    this.flag4 = !this.flag4;
+
+                },
+                beforeEnter2(el) { // 动画进入之前的回调
+                    el.style.transform = 'translate(0,0)';
+                },
+                enter2(el, done) {
+                    el.offsetWidth;
+                    el.style.transform = 'translate(500px,50px)';
+                    el.style.transition = 'all 0.9s ease'
+
+                    done();
+                },
+                afterEnter2(el) {
+                    this.flag5 = !this.flag5;
+                },
+                add() {
+                    if (this.id && this.name) {
+                        this.list.push({
+                            id: this.id,
+                            name: this.name
+                        });
+                        this.id = this.name = '';
+                    }
+                },
+                del(id) {
+                    this.list = this.list.filter(item => item.id != id);
+                }
+
+            }
+        });
+    </script>
+</body>
+
+</html>

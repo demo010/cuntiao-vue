@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件化开发</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <style>
+        .current {
+            color: chocolate;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h2>全局组件</h2>
+        <!-- 组件使用 -->
+
+        <button-counter></button-counter>
+        <button-counter2></button-counter2>
+        <hello-world></hello-world>
+
+        <hr>
+        <h2>props传值</h2>
+        <menu-props :str='pstr' :num='12' :boo='true' :arr='parr' :obj='pobj'></menu-props>
+        <menu-props :str='pstr' num='12' boo='true' :arr='parr' :obj='pobj'></menu-props>
+        <hr>
+        <h2>子组件向父组件传值</h2>
+        <div :style="{fontSize:fontSize + 'px'}">{{msg}}</div>
+        <menu-item @enlarge-size='handle'></menu-item>
+
+        <div :style="{fontSize:fontSize2 + 'px'}">{{pstr}}</div>
+        <menu-item1 @enlarge-size='handle1($event)'></menu-item1>
+
+        <hr>
+        <h2>非父子组件间传值</h2>
+        <text-tom></text-tom>
+        <text-jack></text-jack>
+        <button @click='deshandle'>销毁</button>
+        <hr>
+        <h2>组件插槽</h2>
+        <alter-box>not Found</alter-box>
+        <alter-box></alter-box>
+
+        <hr>
+        <h2>具名插槽用法</h2>
+        <base-layout>
+            <h4 slot='header'>标题信息</h4>
+            <p>具体内容</p>
+            <p>具体内容</p>
+            <span slot="footer">底部信息</span>
+        </base-layout>
+        <h4>template的使用</h4>
+        <base-layout>
+            <template slot='header'>
+                <p>标题信息</p>
+                <p>标题信息</p>
+            </template>
+
+            <p>具体内容</p>
+            <p>具体内容</p>
+            <span slot="footer">底部信息</span>
+        </base-layout>
+        <hr>
+        <h2>作用域插槽</h2>
+        <space-item :fruit='fruits'>
+            <template slot-scope='slotScope'>
+               <strong v-if='slotScope.info.id == 2' class="current"> {{slotScope.info.name}}</strong>
+               <span v-else>{{slotScope.info.name}}</span>
+            </template>
+        </space-item>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+    </div>
+
+    <script>
+        //提供事件中心
+        var eventHub = new Vue();
+        //组件注册
+        //template没有使用模板字符串
+        Vue.component('HelloWorld', {
+            data: function() {
+                return {
+                    msg: 'Hello-World'
+                }
+            },
+            template: `<div>{{msg}}</div>`
+        })
+        Vue.component('button-counter', {
+            data: function() {
+                return {
+                    count: 0
+                }
+
+
+            },
+            template: '<div><button @click="handle">点击了{{count}}次</button><button>点击</button></div>',
+            methods: {
+                handle: function() {
+                    this.count += 2;
+                }
+            }
+        });
+        //template使用模板字符串
+        Vue.component('button-counter2', {
+            data: function() {
+                return {
+                    count: 0
+                }
+            },
+            template: `
+                <div>
+                    <button @click="handle">点击了{{count}}次</button>
+                    <button>点击</button>
+                    <HelloWorld></HelloWorld>
+                </div>
+            `,
+            methods: {
+                handle: function() {
+                    this.count += 3;
+                }
+            }
+        })
+        Vue.component('menu-props', {
+            props: ['str', 'num', 'boo', 'arr', 'obj'],
+            template: `<div>
+                        <div>{{str}}</div>
+                        <div>{{typeof num}}</div>
+                        <div>{{typeof boo}}</div>
+                        <div>
+                            <ul>
+                                <li :key='index' v-for='(item,index) in arr'>{{item}}</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <span>{{obj.name}}</span>
+                            <span>{{obj.age}}</span>
+                        </div>
+                    <div>`
+        })
+        Vue.component('menu-item', {
+            template: ` <button @click='$emit("enlarge-size")'>子组件向父组件传值
+                        </button>`
+        });
+        Vue.component('menu-item1', {
+            template: ` <button @click='$emit("enlarge-size",5)'>子组件向父组件传值(带参)
+                        </button>`
+        })
+        Vue.component('text-tom', {
+            data: function() {
+                return {
+                    num: 0
+                }
+            },
+            template: `
+                <div>
+                <div>TOM:{{num}}</div>              
+                <button @click='handle'>tom点击</button>               
+                <div>
+            `,
+            methods: {
+                handle: function() {
+                    //触发兄弟组件的事件
+                    eventHub.$emit('jack-event', 1)
+                }
+            },
+            mounted: function() {
+                eventHub.$on('tom-event', (val) => this.num += val)
+            }
+        });
+        Vue.component('text-jack', {
+            data: function() {
+                return {
+                    num: 0
+                }
+            },
+            template: `
+            <div>
+                <div>JACK:{{num}}</div>
+                <button @click='handle'>jack点击</button>
+            </div>
+            `,
+            methods: {
+                handle: function() {
+                    eventHub.$emit('tom-event', 2)
+                }
+            },
+            mounted: function() {
+                eventHub.$on('jack-event', (val) => this.num += val)
+            }
+        });
+        //组件插槽
+        Vue.component('alter-box', {
+                template: `
+                <div>
+                    <strong>404:</strong>   
+                    <slot>找不到路径(默认内容)</slot> 
+                </div>
+            `
+            })
+            //具名插槽
+        Vue.component('base-layout', {
+                template: `
+                <div>
+                    <header>
+                        <slot name='header'></slot>    
+                    </header>    
+                    <main>
+                        <slot></slot>    
+                    </main>
+                    <footer>
+                        <slot name='footer'></slot>    
+                    </footer>
+                </div>
+            `
+            })
+            //作用域插槽
+        Vue.component('space-item', {
+            props: ['fruit'],
+            template: `
+                <div>
+                    <ul>
+                        <li :key='item.id' v-for='item in fruit'>
+                            <slot :info='item'>
+                                {{item.name}}    
+                            </slot>    
+                        </li>    
+                    </ul>    
+                <div>
+            `
+        })
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: '窗子',
+                pstr: 'props传值',
+                parr: ['abc', 'def', 'xyz'],
+                pobj: {
+                    name: 'hel',
+                    age: 18
+                },
+                fontSize: 10,
+                fontSize2: 10,
+                fruits: [{
+                    id: 1,
+                    name: 'apple'
+                }, {
+                    id: 2,
+                    name: 'apple2'
+                }, {
+                    id: 3,
+                    name: 'apple3'
+                }]
+            },
+            methods: {
+
+                handle: function() {
+                    this.fontSize += 5;
+                },
+                handle1: function(val) {
+                    this.fontSize2 += val;
+                },
+                deshandle: function() {
+                    eventHub.$off('tom-event');
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

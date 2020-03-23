@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数组操作</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+
+
+        <input type="text" v-model='fname'>
+        <div>
+            <button @click='addPush'>push</button>
+            <button @click='addUnShift'>unshift</button>
+            <button @click='delPop'>pop</button>
+            <button @click='delShift'>shift</button>
+            <button @click='arrReverse'>reverse</button>
+            <button @click='delSplice'>splice</button>
+            <button @click='change'>替换</button>
+        </div>
+        <ul>
+            <li :key='index' v-for='(item,index) in list'>{{item}}</li>
+        </ul>
+        <div>
+            <ul>
+                <li :key='index' v-for='(value,key,index) in info'>{{key + '--' + value }}</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                fname: '',
+                list: ['苹果', '栗子', '脐橙'],
+                info: {
+                    name: '扎根三',
+                    age: 18
+                }
+            },
+            methods: {
+                addPush() {
+                    if (this.fname) {
+                        this.list.push(this.fname);
+                        this.fname = '';
+                    }
+
+                },
+                addUnShift() {
+                    if (this.fname) {
+                        this.list.unshift(this.fname);
+                        this.fname = '';
+                    }
+                },
+                delPop() {
+                    this.list.pop();
+                },
+                delShift() {
+                    this.list.shift();
+                },
+                arrReverse() {
+                    this.list.reverse();
+                },
+                delSplice() {
+                    this.list.splice(this.list.length + 1, 0, this.fname);
+                    console.log(this.list);
+                },
+                change() {
+                    this.list = this.list.slice(0, 2);
+                }
+            },
+        });
+        vm.$set(vm.list, 0, '花生');
+        Vue.set(vm.list, 1, '柠檬');
+        vm.$set(vm.info, 'gender', 'male');
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>组件间传值</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <com0 :parentmsg='msg'></com0>
+        <com1 @getfunc='show'></com1>
+        <com2 @getfunc='show1'></com2>
+        <com3 @getfunc3='getSonData'></com3>
+        <!--子组件调用父组件的方法==>步骤一-->
+    </div>
+    <template id="temp1">
+        <div>
+            <h2>子组件 通过 事件绑定 调用 父组件的 方法(不传参数)</h2>
+            <input type="button" value="子组件 调用 父组件的 方法" @click='getShowByParent'> <!--子组件调用父组件的方法==>步骤三-->
+            <br>
+            <hr>
+            <br>
+        </div>
+    </template>
+    <template id="temp2">
+        <div>
+            <h2>子组件 通过 事件绑定 调用 父组件的 方法(传参数)</h2>
+            <input type="button" value="子组件 调用 父组件的 方法" @click='getShowByParent'> 
+            <br>
+            <hr>
+            <br>
+        </div>
+    </template>
+
+    <script>
+        var com1 = {
+            template: '#temp1',
+            methods: {
+                getShowByParent() {
+                    this.$emit('getfunc'); //<!--子组件调用父组件的方法==>步骤二--> 
+                }
+            }
+        };
+        var com2 = {
+            template: '#temp2',
+            methods: {
+                getShowByParent() {
+                    this.$emit('getfunc', '参数一,', '参数二'); //接收参数
+                }
+            }
+        };
+        var com3 = Vue.component('com3', {
+            data() {
+                return {
+                    sonMsg: {
+                        name: '小偷儿子',
+                        age: 6
+                    }
+                }
+            },
+            template: `<div>
+                        <h2>子组件通过事件向=>父组件==传值</h2>
+                        <input type="button" value="子组件通过事件向=>父组件==传值" @click='getShowByParent3'> 
+                        <br>
+                        <hr>
+                        <br>
+                    </div>`,
+            methods: {
+                getShowByParent3() {
+                    this.$emit('getfunc3', this.sonMsg);
+                }
+            }
+
+        })
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: '我是-父组件的-数据.',
+                getDataFromSon: null,
+            },
+            methods: {
+                show() {
+                    console.log('我是父组件的方法-show()');
+
+                },
+                show1(data1, data2) {
+                    console.log('我是父组件的方法-show()--', data1, data2);
+
+                },
+                getSonData(data) {
+                    this.getDataFromSon = data;
+                    console.log(this.getDataFromSon);
+
+                }
+            },
+            components: {
+                com0: {
+                    template: `<div>
+                        <h2>父组件=>子组件==传值</h2>
+                        <h4>子组件-接收-父组件-传过来的值=={{parentmsg}}</h4>
+                        <br>
+                        <hr>
+                        <br>
+                    </div>`,
+                    props: ['parentmsg'],
+                },
+                com1, //==>com1:com1
+                com2,
+                com3: com3, // com3
+            }
+        });
+    </script>
+</body>
+
+</html>

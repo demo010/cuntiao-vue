@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #app {
+            width: 80%;
+            margin: 0 auto;
+        }
+        
+        .list-enter,
+        .list-leave-to {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        .list-enter-active,
+        .list-leave-active {
+            transition: all 0.7s ease-in-out;
+        }
+        /**v-move 和 v-leave-active 结合使用，能够让列表的过渡更加平缓柔和：*/
+        
+        .list-move {
+            transition: all 0.7s ease-in-out;
+        }
+        
+        .list-leave-active {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+
+        <comment-box @func='loadComments'></comment-box>
+
+        <span class="label label-info" v-if='isComment'>还未发表评论</span>
+
+        <transition-group name='list' appear tag="ul" :class='listgroup'>
+            <li class="list-group-item" :key='item.id' v-for='item in list'>
+
+                <span class="badge">
+                    评论时间-{{item.comdate | format('yyyy-MM-dd hh:mm:ss')}}
+                </span>
+                <span class="badge">
+                    评论员-{{item.user}}
+                </span> {{item.content}}
+            </li>
+        </transition-group>
+    </div>
+    <template id="contentheader">
+        <div>
+            <div class="form-group">
+                <label>评论员:</label>
+                <input type="text" class="form-control" v-model='user'>
+            </div>
+            <div class="form-group">
+                <label>评论内容:</label>
+               <textarea class="form-control" v-model='content'></textarea>
+            </div>
+            <div class="form-group">
+                <input type="button" value="发表评论" class="btn btn-primary" @click='postComment'>
+            </div>
+        </div>
+    </template>
+    <script src="./js//dateTool.js"></script>
+    <script>
+        var commentBox = {
+            data() {
+                return {
+                    user: '',
+                    content: ''
+                }
+            },
+            template: '#contentheader',
+            methods: {
+                //发表评论
+                postComment() {
+                    //获取评论的内容,封装成一个评论对象
+                    let comment = {
+                        id: generateUUID(),
+                        user: this.user,
+                        content: this.content,
+                        comdate: new Date()
+                    };
+                    //从localStorage获取所有缓存的评论, '[]'防止没有缓存数据时出错
+                    let list = JSON.parse(localStorage.getItem('cmts') || '[]');
+                    console.log(list);
+                    list.unshift(comment);
+
+                    //将数据保存到localStorage
+                    localStorage.setItem('cmts', JSON.stringify(list));
+                    this.user = this.content = '';
+                    this.$emit('func');
+                }
+            }
+        }
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                list: [],
+                isComment: true,
+                listgroup: 'list-group'
+            },
+            methods: {
+                loadComments() {
+                    this.list = JSON.parse(localStorage.getItem('cmts') || '[]');
+                    if (this.list.length > 0) {
+                        this.isComment = false;
+                    }
+
+                }
+            },
+            filters: {
+                format: (value, arg) => dateFormat(value, arg)
+
+            },
+            components: {
+                commentBox,
+            },
+            created() {
+                this.loadComments();
+            },
+        });
+    </script>
+</body>
+
+</html>

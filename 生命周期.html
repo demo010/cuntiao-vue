@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue-生命周期</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div id="div">{{msg}}</div>
+        <button @click='updateHandle'>更新</button>
+        <button @click='destroyHandle'>销毁</button>
+    </div>
+    <script>
+        /**什么是生命周期：从Vue实例创建、运行、到销毁期间，总是伴随着各种各样的事件，这些事件，统称为生命周期！
+         *生命周期钩子：就是生命周期事件的别名而已；
+         *生命周期钩子 = 生命周期函数 = 生命周期事件
+         */
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: '生命周期'
+            },
+            methods: {
+                handle: function() {
+                    console.log(this.msg);
+                },
+                updateHandle() {
+                    this.msg += 'update';
+                    console.log(this.msg);
+
+                },
+                destroyHandle() {
+                    this.$destroy();
+                }
+            },
+
+            //表示实例完全被创建出来之前,会执行它
+            //注意:在beforeCreate 生命周期函数执行的时候,data,methods中的数据还没有初始化
+            beforeCreate() {
+
+                try {
+                    console.log(this.msg); //undefined
+                    this.handle();
+
+                } catch (e) {
+                    console.log('catch', e);
+
+                } finally {
+                    console.log('beforeCreate******');
+                }
+            },
+
+            //注意:在Create 生命周期函数执行的时候,data,methods中的数据已经被初始化
+            //如果要调用methods中的方法 或 操作data的数据, 最早只能在created 中操作
+            created() {
+                console.log('created******');
+                console.log(this.msg);
+                this.handle();
+
+            },
+
+            //该函数表示 模板 已经在内存中编辑完成,但是尚未把模板渲染到 页面中
+            //注意: 在 beforeMount 执行的时候,页面中的元素,还没有真正替换过来,只是之前写的一些模板字符串
+            beforeMount() {
+                console.log('beforeMount******');
+                console.log(document.getElementById('div').innerText); //{{msg}}
+
+            },
+
+            //该函数表示 内存中的模板,已经真实的挂载到了页面中,用户已经可以看到渲染好的页面了
+            //注意: mounted 是实例创建期间的最后一个生命周期函数,当执行完 mounted 就表示,实例已经被完全创建好了,此时,如果没有其他操作的话,这个实例,就静静的 躺在我们的内存中,一动不动.
+            //如果要通过某些插件操作DOM节点,最早要在mounted
+            //只要执行完mounted,就表示VUE组件已经初始化完毕,
+            mounted() {
+                console.log('mounted*****');
+                console.log(document.getElementById('div').innerText);
+            },
+
+            //注意: beforeUpdate , updated执行次数 [0,无数次]
+
+            //状态更新之前执行此函数， 此时 data 中的状态值是最新的，但是界面上显示的 数据还是旧的，因为此时还没有开始重新渲染DOM节点
+            beforeUpdate() {
+                console.log('beforeUpdate');
+            },
+
+            //实例更新完毕之后调用此函数，此时 data 中的状态值 和 界面上显示的数据，都已经完成了更新，界面已经被重新渲染好了！
+            updated() {
+                console.log('updated');
+            },
+            beforeDestroy() {
+                console.log('beforeDestroy');
+            },
+            destroyed() {
+                console.log('destroyed');
+            },
+        })
+    </script>
+
+</body>
+
+</html>

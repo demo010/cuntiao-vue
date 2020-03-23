@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物车</title>
+    <link rel="stylesheet" href="../css/shopcar.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="cart">
+                <div class="title">我的商品</div>
+                <div>
+                    <div class="item">
+                        <img src="../img/a.jpg" />
+                        <div class="name"></div>
+                        <div class="change">
+                            <a href="">－</a>
+                            <input type="text" class="num" />
+                            <a href="">＋</a>
+                        </div>
+                        <div class="del">×</div>
+                    </div>
+                    <div class="item">
+                        <img src="../img/b.jpg" />
+                        <div class="name"></div>
+                        <div class="change">
+                            <a href="">－</a>
+                            <input type="text" class="num" />
+                            <a href="">＋</a>
+                        </div>
+                        <div class="del">×</div>
+                    </div>
+                    <div class="item">
+                        <img src="../img/c.jpg" />
+                        <div class="name"></div>
+                        <div class="change">
+                            <a href="">－</a>
+                            <input type="text" class="num" />
+                            <a href="">＋</a>
+                        </div>
+                        <div class="del">×</div>
+                    </div>
+                    <div class="item">
+                        <img src="../img/d.jpg" />
+                        <div class="name"></div>
+                        <div class="change">
+                            <a href="">－</a>
+                            <input type="text" class="num" />
+                            <a href="">＋</a>
+                        </div>
+                        <div class="del">×</div>
+                    </div>
+                    <div class="item">
+                        <img src="../img/e.jpg" />
+                        <div class="name"></div>
+                        <div class="change">
+                            <a href="">－</a>
+                            <input type="text" class="num" />
+                            <a href="">＋</a>
+                        </div>
+                        <div class="del">×</div>
+                    </div>
+                </div>
+                <div class="total">
+                    <span>总价：123</span>
+                    <button>结算</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var CartTitle = {
+            template: ``
+        }
+        var CartList = {
+            template: ``
+        }
+        var CartTotal = {
+                template: ``
+            }
+            //定义一个全局组件
+        Vue.component('my-card', {
+            template: ``,
+            //定义局部组件
+            components: {
+                'cart-title': CartTitle,
+                'cart-list': CartList,
+                'cart-total': CartTotal
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+
+            },
+            mounted: function() {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
