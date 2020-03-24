@@ -37,6 +37,7 @@
         <hr>
         <h2>使用 query 传参</h2>
         <h3>通过 $route.query.xxx</h3>
+        <h3>使用 watch 监听路由的改变</h3>
         <router-link to="/login?id=10&name=hello" tag="span">登录</router-link>
         <router-link to="/register/12/hello2" tag="span">注册</router-link>
         <router-link to="/loginout" tag="span">登出 </router-link>
@@ -78,7 +79,18 @@
             el: '#app',
             data: {},
             methods: {},
-            router: routerObj
+            router: routerObj,
+            watch: {
+                '$route.path': function(newVal, oldVal) {
+                    console.log(newVal + '--' + oldVal);
+                    if (newVal == '/login') {
+                        alert('欢迎进入登录页面')
+                    } else {
+                        alert('操作成功')
+                    }
+
+                }
+            }
         });
     </script>
 </body>

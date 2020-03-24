@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>父子组件传值</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <com1 :parent-msg='msg' @func='sendMsgToParent'></com1>
+        <h2>这是子组件给父组件传的值 -- {{MsgBySon}}</h2>
+    </div>
+    <template id="templ">
+        <div>
+            <h2>这是子组件--{{parentMsg}}</h2>
+            <input type="button" value="给父组件传值" @click='sendMsg'>
+        </div>
+    </template>
+    <script>
+        const com1 = {
+            data() {
+                return {
+                    sonMsg: '这是子组件给父组件的值'
+                }
+            },
+            template: '#templ',
+            props: ['parentMsg'],
+            methods: {
+                sendMsg() {
+                    this.$emit('func', this.sonMsg)
+                }
+            }
+        }
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: '这是父组件传给子组件的',
+                MsgBySon: ''
+            },
+            methods: {
+                sendMsgToParent(data) {
+                    this.MsgBySon = data;
+                }
+            },
+            components: {
+                com1,
+            }
+        });
+    </script>
+</body>
+
+</html>
